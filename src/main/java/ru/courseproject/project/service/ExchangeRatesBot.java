@@ -30,6 +30,7 @@ public class ExchangeRatesBot extends TelegramLongPollingBot {
         long chatId = update.getMessage().getChatId();
 
         switch (message) {
+            case "start":
             case "/start":
                 var userName = update.getMessage().getChat().getFirstName();
                 startCommand(chatId, userName);
