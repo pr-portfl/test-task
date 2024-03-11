@@ -9,5 +9,4 @@ public interface UserTelegrRepository extends JpaRepository<UserTelegr, Long> {
     @Query("select count(*) from UserTelegr t where t.id = :id and t.firstName = :firstName ")
     public int verifyDublicateUserTelegr(Long id, String firstName);
 
-
 }

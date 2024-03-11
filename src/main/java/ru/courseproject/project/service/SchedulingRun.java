@@ -3,12 +3,16 @@ package ru.courseproject.project.service;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import ru.courseproject.project.models.BuffNotification;
 import ru.courseproject.project.models.ListDataNotification;
+import ru.courseproject.project.models.UserTelegr;
 import ru.courseproject.project.repository.NotificationRepository;
+import ru.courseproject.project.repository.UserTelegrRepository;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class SchedulingRun {
@@ -16,36 +20,36 @@ public class SchedulingRun {
     private ExchangeRatesBot exchangeRatesBot;
 
     @Autowired
-    private NotificationRepository repo;
+    private NotificationRepository notificationPepo;
 
+    @Autowired
+    private UserTelegrRepository userTelegrRepo;
     private ListDataNotification listDataNotification;
+
+    List<BuffNotification> lsMailMes;
+    private int indexLsMailMes = 0;
+    private List<UserTelegr> lsUserTelegr;
+
     @PostConstruct
-    private void init() {
+    public void init() {
+        lsMailMes = notificationPepo.getListNotification();
 
-        listDataNotification = new ListDataNotification();
-
-        var dt1 = LocalDateTime.now().format(FormaterDateTime.dateTimeFormatter);
-        var lsLoad = repo.getList(dt1);
-
-        lsLoad.stream().forEach( item -> listDataNotification.addItem(item) );
+        lsUserTelegr = userTelegrRepo.findAll()
+                .stream().filter(item-> item.getId() > 100000L)
+                .collect(Collectors.toList());
     }
 
     @Scheduled(cron = "*/10 * * * * *")
     public void run() {
 
-        if (exchangeRatesBot.getChatID() == null || listDataNotification.getMap().size() == 0) {
+        if (lsMailMes.size() == 0 || indexLsMailMes == lsMailMes.size()) {
             return;
         }
 
-        var keys = listDataNotification.getMap().keySet().stream().toList() ;
-        var item = keys.get(0);
-
-        var mes = listDataNotification.getMap().get(item).getMes();
-
-        var token = exchangeRatesBot.getChatID();
-        exchangeRatesBot.setMessage(String.valueOf(token), mes);
-
-        listDataNotification.getMap().remove(item);
+        lsUserTelegr.stream().forEach(item -> {
+            var buffNotification = lsMailMes.get(indexLsMailMes++);
+            exchangeRatesBot.sendMessage(item.getId(), buffNotification.getMes());
+        });
 
     }
 

@@ -1,8 +1,8 @@
-package ru.courseproject.project.service.userService;
+package ru.courseproject.project.service.anyService;
 
 import ru.courseproject.project.models.dto.ResultMethod;
 
-public interface NotificationServ {
+public interface UserTelegrServ {
 
     ResultMethod verifyFormatMessage(String mes);
 

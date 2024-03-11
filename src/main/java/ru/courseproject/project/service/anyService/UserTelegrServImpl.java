@@ -1,4 +1,4 @@
-package ru.courseproject.project.service.userService;
+package ru.courseproject.project.service.anyService;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -10,11 +10,11 @@ import ru.courseproject.project.models.dto.ResultMethod;
 import ru.courseproject.project.repository.UserTelegrRepository;
 
 @Service
-public class NotificationServImpl implements  NotificationServ {
+public class UserTelegrServImpl implements UserTelegrServ {
 
     private UserTelegrRepository userTelegrRepo;
 
-    public NotificationServImpl(UserTelegrRepository repo) {
+    public UserTelegrServImpl(UserTelegrRepository repo) {
         userTelegrRepo = repo;
     }
 
@@ -23,7 +23,7 @@ public class NotificationServImpl implements  NotificationServ {
 
         ResultMethod result = null;
 
-        var pattern = "([0-9\\.\\:\\s]{16})\\s+([\\W+]+)";
+        var pattern = "([0-9\\.\\:\\s]{16})\\s+(.+)";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(mes);
 

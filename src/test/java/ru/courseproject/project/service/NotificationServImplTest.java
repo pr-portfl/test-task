@@ -7,13 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.courseproject.project.models.UserTelegr;
 import ru.courseproject.project.models.dto.ResultMethod;
 import ru.courseproject.project.repository.UserTelegrRepository;
-import ru.courseproject.project.service.userService.NotificationServImpl;
+import ru.courseproject.project.service.anyService.UserTelegrServImpl;
 
 @SpringBootTest
 public class NotificationServImplTest {
 
     @Autowired
-    private NotificationServImpl notificationServ;
+    private UserTelegrServImpl notificationServ;
 
     @Autowired
     private UserTelegrRepository userTelegrRepo;

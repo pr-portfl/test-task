@@ -9,21 +9,21 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.courseproject.project.repository.UserTelegrRepository;
+import ru.courseproject.project.service.anyService.UserMesServImp;
 
 @Component
 public class ExchangeRatesBot extends TelegramLongPollingBot {
 
-    @Value("${bot.token}") String botToken;
+    private UserMesServImp userMesServImp;
+    private UserTelegrRepository userTelegrRepo;
 
-    @Getter
-    private Long chatID;
-
-    public String getToken() {
-        return botToken;
-    }
-
-    public ExchangeRatesBot(@Value("${bot.token}") String botToken)   {
+    public ExchangeRatesBot(@Value("${bot.token}") String botToken,
+                            UserMesServImp userMesServImp,
+                            UserTelegrRepository userTelegrRepository )   {
         super(botToken);
+        this.userMesServImp = userMesServImp;
+        this.userTelegrRepo = userTelegrRepository;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangeRatesBot.class);
@@ -34,19 +34,33 @@ public class ExchangeRatesBot extends TelegramLongPollingBot {
             return;
         }
 
-        var message = update.getMessage().getText();
-        if (getChatID() == null) {
-            chatID = update.getMessage().getChatId();
-        }
+        var chatID = update.getMessage().getChatId();
+        var text = update.getMessage().getText();
+        var firstName = update.getMessage().getChat().getFirstName();
 
-        switch (message) {
+        switch (text) {
             case "start":
             case "/start":
-                var userName = update.getMessage().getChat().getFirstName();
-                startCommand(chatID, userName);
+                startCommand(chatID, firstName);
                 break;
-            default: unknownCommand(chatID);
+            default: anyMessageFromUser(chatID, firstName, text);
                 break;
+        }
+
+    }
+
+    private void anyMessageFromUser(long chatId, String firstName, String text) {
+
+        var res = userMesServImp.addUserMes(chatId, firstName, text);
+
+        if (!res.RESULT) {
+            if (res.MESSAGE.equalsIgnoreCase("Формат не опознан")) {
+                sendMessage(chatId, res.MESSAGE);
+            } else {
+                sendMessage(chatId, "Запрос отклонен");
+            }
+        } else {
+            sendMessage(chatId, "Сообщение обработано");
         }
 
     }
@@ -56,19 +70,8 @@ public class ExchangeRatesBot extends TelegramLongPollingBot {
         sendMessage(chatId, text);
     }
 
-    private void sendMessage(Long chatId, String text) {
+    public void sendMessage(Long chatId, String text) {
         var chatIdStr = String.valueOf(chatId);
-        var sendMessage = new SendMessage(chatIdStr, text);
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            LOG.error("Ошибка отправки сообщения", e);
-        }
-    }
-
-    private void unknownCommand(Long chatId) {
-        var chatIdStr = String.valueOf(chatId);
-        var text = "Команда не распознана";
         var sendMessage = new SendMessage(chatIdStr, text);
 
         try {
@@ -83,14 +86,4 @@ public class ExchangeRatesBot extends TelegramLongPollingBot {
         return "sprBootCorseProBot";
     }
 
-    public void setMessage(String chatId, String text) {
-        var chatIdStr = String.valueOf(chatId);
-        var sendMessage = new SendMessage(chatIdStr, text);
-
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            LOG.error("Ошибка отправки сообщения: ", e.getMessage());
-        }
-    }
 }
