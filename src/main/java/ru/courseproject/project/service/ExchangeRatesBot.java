@@ -3,7 +3,10 @@ package ru.courseproject.project.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,11 +14,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
+//@PropertySource("classpath: telegrambot.properties")
 public class ExchangeRatesBot extends TelegramLongPollingBot {
 
-
-    public ExchangeRatesBot(@Value("${bot.token}") String botToken) {
-        super(botToken);
+    //public ExchangeRatesBot(@Value("${bot.token}") String botToken)
+    public ExchangeRatesBot()   {
+        //@Value("${bot.token}") String botToken;
+        super("AAGs5r8J_Et31yAO6lde6Jkiz7LF3UrcKsU");
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangeRatesBot.class);
