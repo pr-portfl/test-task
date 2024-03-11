@@ -1,12 +1,9 @@
 package ru.courseproject.project.service;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,13 +11,19 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-//@PropertySource("classpath: telegrambot.properties")
 public class ExchangeRatesBot extends TelegramLongPollingBot {
 
-    //public ExchangeRatesBot(@Value("${bot.token}") String botToken)
-    public ExchangeRatesBot()   {
-        //@Value("${bot.token}") String botToken;
-        super("AAGs5r8J_Et31yAO6lde6Jkiz7LF3UrcKsU");
+    @Value("${bot.token}") String botToken;
+
+    @Getter
+    private Long chatID;
+
+    public String getToken() {
+        return botToken;
+    }
+
+    public ExchangeRatesBot(@Value("${bot.token}") String botToken)   {
+        super(botToken);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangeRatesBot.class);
@@ -32,16 +35,18 @@ public class ExchangeRatesBot extends TelegramLongPollingBot {
         }
 
         var message = update.getMessage().getText();
-        long chatId = update.getMessage().getChatId();
+        if (getChatID() == null) {
+            chatID = update.getMessage().getChatId();
+        }
 
         switch (message) {
             case "start":
             case "/start":
                 var userName = update.getMessage().getChat().getFirstName();
-                startCommand(chatId, userName);
+                startCommand(chatID, userName);
                 break;
-            default: unknownCommand(chatId);
-            break;
+            default: unknownCommand(chatID);
+                break;
         }
 
     }
@@ -76,5 +81,16 @@ public class ExchangeRatesBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return "sprBootCorseProBot";
+    }
+
+    public void setMessage(String chatId, String text) {
+        var chatIdStr = String.valueOf(chatId);
+        var sendMessage = new SendMessage(chatIdStr, text);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            LOG.error("Ошибка отправки сообщения: ", e.getMessage());
+        }
     }
 }
