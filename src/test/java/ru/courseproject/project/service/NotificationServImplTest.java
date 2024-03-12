@@ -25,7 +25,7 @@ public class NotificationServImplTest {
         assertInstanceOf(ResultMethod.class, res);
         assertTrue(res.RESULT);
 
-        userTelegrRepo.deleteById(((UserTelegr) res.OBJ).getId());
+        userTelegrRepo.deleteById(((UserTelegr) res.OBJECT).getId());
     }
 
     @Test

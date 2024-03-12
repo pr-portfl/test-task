@@ -37,37 +37,44 @@ public class UserMesServImp implements UserMesServ {
     @Override
     public ResultMethod addUserMes(Long chartId, String firstName, String strUserMes) {
 
-        var resVerify = userTelegrServ.verifyFormatMessage(strUserMes);
+        var resVerify = userTelegrServ.verifyFormatMessage(strUserMes.trim());
 
-        if (!resVerify.RESULT) {
-            return new ResultMethod(resVerify.MESSAGE);
-        }
-
-        var lsFromVerify = (List<String>) resVerify.OBJ;
-        LocalDateTime dateTime;
-        String strTextMes;
         try {
+
+            if (!resVerify.RESULT) {
+                throw new NumberFormatException(resVerify.MESSAGE);
+            }
+
+            var lsFromVerify = (List<String>) resVerify.OBJECT;
+            LocalDateTime dateTime;
+            String strTextMes;
+
             dateTime = LocalDateTime
                     .parse(lsFromVerify.get(0), FormaterDateTime.dateTimeFormatterFull);
             strTextMes = lsFromVerify.get(1);
 
+            if (verifyExistsUserMes(chartId, strTextMes)) {
+                throw new Exception("Повторный ввод сообщения");
+            }
+
             var resCreate = userTelegrServ.createUserTelegram(chartId, firstName);
             if (!resCreate.RESULT) {
-                return new ResultMethod(resCreate.MESSAGE);
+                throw new Exception(resCreate.MESSAGE);
             }
 
             var userMes = new UserMes();
             userMes.setId(null);
             userMes.setDateMes(dateTime.toLocalDate());
             userMes.setMes(strTextMes);
-            userMes.setIdUser( ((UserTelegr) resCreate.OBJ).getId());
+            userMes.setIdUser(((UserTelegr) resCreate.OBJECT).getId());
 
             return new ResultMethod(userMesRep.save(userMes));
 
         } catch (NumberFormatException ex) {
             return new ResultMethod(ex.getMessage());
+        } catch (Exception ex) {
+            return new ResultMethod(ex.getMessage());
         }
-
     }
 
     @Override
@@ -97,6 +104,11 @@ public class UserMesServImp implements UserMesServ {
         userMesRep.deleteById((long) item.getId());
 
         return new ResultMethod(item);
+    }
+
+    @Override
+    public boolean verifyExistsUserMes(long userId, String mes) {
+         return userMesRep.existsUserMes(userId, mes) > 0;
     }
 
 }

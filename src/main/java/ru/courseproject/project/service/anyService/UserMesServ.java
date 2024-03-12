@@ -1,6 +1,5 @@
 package ru.courseproject.project.service.anyService;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import ru.courseproject.project.models.UserMes;
 import ru.courseproject.project.models.dto.ResultMethod;
 
@@ -14,5 +13,7 @@ public interface UserMesServ {
     ResultMethod deleteAllUserMesByUserTelegrId(Long id );
 
     ResultMethod deleteUserMesByUserTelegrId(Long id );
+
+    boolean verifyExistsUserMes(long userId, String mes);
 
 }

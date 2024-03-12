@@ -64,6 +64,7 @@ public class LoadData implements CommandLineRunner{
             notificationRepo.saveAll(ls);
 
         } catch (Exception ex) {
+            // TODO: заменить выводом в лог
             System.out.println("Ошибка загрузки начальных данных:\n" + ex.getMessage());
         }
 

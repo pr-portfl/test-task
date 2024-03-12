@@ -18,11 +18,34 @@ public class UserMesTest {
     }
 
     @Test
-    public void existsUserMes() {
-        var result = userMesRepo.existsUserMes(1L);
+    public void existsUserMes_find() {
 
-        assertEquals(0, result);
+        var userMes = userMesRepo.findAll().stream().findFirst().orElseThrow();
+
+        var result = userMesRepo.existsUserMes(userMes.getIdUser(), userMes.getMes());
+
+        assertTrue(result>0);
     }
 
 
+    @Test
+    public void existsUserMes_notFind() {
+
+        var userMes = userMesRepo.findAll().stream().findFirst().orElseThrow();
+
+        var result = userMesRepo.existsUserMes(userMes.getIdUser(), userMes.getMes() + "_");
+
+        assertFalse(result>0);
+    }
+
+
+    @Test
+    public void existsUserMes_IllegalUserId() {
+
+        var userMes = userMesRepo.findAll().stream().findFirst().orElseThrow();
+
+        var result = userMesRepo.existsUserMes(userMes.getIdUser() + 100000, userMes.getMes());
+
+        assertFalse(result>0);
+    }
 }

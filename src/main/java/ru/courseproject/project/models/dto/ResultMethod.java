@@ -6,24 +6,24 @@ public final class ResultMethod {
     public final boolean RESULT;
     public final String MESSAGE;
 
-    public final Object OBJ;
+    public final Object OBJECT;
 
     public ResultMethod(boolean res, String mes, Object obj) {
         RESULT = res;
         MESSAGE = mes.equalsIgnoreCase("ok") ? "ok" : mes;
-        this.OBJ = obj;
+        this.OBJECT = obj;
     }
 
     public ResultMethod(Object obj) {
         RESULT = true;
         MESSAGE = "ok";
-        OBJ = obj;
+        OBJECT = obj;
     }
 
     public ResultMethod(String mes) {
         RESULT = false;
         MESSAGE = mes;
-        OBJ = null;
+        OBJECT = null;
     }
 
 }

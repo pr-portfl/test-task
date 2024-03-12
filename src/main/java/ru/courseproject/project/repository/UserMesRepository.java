@@ -8,9 +8,10 @@ import java.util.Collection;
 
 public interface UserMesRepository extends JpaRepository<UserMes, Long> {
     @Query("select u From UserMes u where u.idUser = :id")
-    public Collection<UserMes> findAllUserMesByUserTelgId(Long id);
+public Collection<UserMes> findAllUserMesByUserTelgId(Long id);
 
-    @Query("Select count(*) from UserMes u where u.idUser = :id ")
-    public int existsUserMes(Long id);
+    @Query("Select count(*) from UserMes u where u.idUser = :id and lower(u.mes) = lower(:mes) ")
+    public int existsUserMes(Long id, String mes);
+
 
 }

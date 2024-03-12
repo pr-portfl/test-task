@@ -1,7 +1,6 @@
 package ru.courseproject.project.service;
 
 
-import io.micrometer.observation.ObservationTextPublisher;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,6 @@ import ru.courseproject.project.models.dto.ResultMethod;
 import ru.courseproject.project.repository.UserMesRepository;
 import ru.courseproject.project.repository.UserTelegrRepository;
 import ru.courseproject.project.service.anyService.UserMesServImp;
-import ru.courseproject.project.service.anyService.UserTelegrServ;
-
-import java.util.List;
 
 @SpringBootTest
 public class UserMesServiceTest {
@@ -61,11 +57,10 @@ public class UserMesServiceTest {
         assertInstanceOf(ResultMethod.class, resAdd);
         assertTrue(resAdd.RESULT);
 
-        var idUserMes = (long) ((UserMes) resAdd.OBJ).getId();
+        var idUserMes = (long) ((UserMes) resAdd.OBJECT).getId();
         var resDelete = userMesServImp.deleteUserMesByUserTelegrId(idUserMes);
 
         assertTrue(resDelete.RESULT);
     }
-
 
 }
